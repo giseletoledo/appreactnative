@@ -25,7 +25,7 @@ const FavoritesScreen: React.FC = () => {
     };
 
     loadFavorites();
-  }, [favoriteIds]); // Atualiza quando favoriteIds muda
+  }, [favoritePosts]); // Atualiza quando favoriteIds muda
 
   return (
     <View style={styles.container}>

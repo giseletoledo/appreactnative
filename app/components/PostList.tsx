@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 3/2,
     borderRadius: 10
-  }
+  },
+  
 });
 
 export default PostList;

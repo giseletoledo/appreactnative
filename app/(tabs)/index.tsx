@@ -1,31 +1,66 @@
-import { StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import postsData from '../data/posts.json';
+import PostList from '../components/PostList';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+const HomeScreen = () => {
+  const [posts, setPosts] = useState(postsData);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
-export default function TabOneScreen() {
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const storedFavorites = await AsyncStorage.getItem('favorites');
+        if (storedFavorites) {
+          setFavorites(JSON.parse(storedFavorites));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar favoritos:', error);
+      }
+    };
+
+    loadFavorites();
+  }, []);
+
+  const toggleFavorite = async (postId: string) => {
+    const newFavorites = [...favorites];
+    const index = newFavorites.indexOf(postId);
+
+    if (index !== -1) {
+      // Remove from favorites
+      newFavorites.splice(index, 1);
+    } else {
+      // Add to favorites
+      newFavorites.push(postId);
+    }
+
+    setFavorites(newFavorites);
+
+    try {
+      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+    } catch (error) {
+      console.error('Erro ao salvar favoritos:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <PostList
+        posts={posts}
+        favorites={favorites}
+        onToggleFavorite={toggleFavorite}
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    padding: 16,
+    alignItems: 'center'
   },
 });
+
+export default HomeScreen;
