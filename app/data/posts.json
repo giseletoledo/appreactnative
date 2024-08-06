@@ -1,0 +1,23 @@
+[
+    {
+      "id": "1",
+      "userId": "1",
+      "nome": "Luna Silva",
+      "descricao": "Viagem com as amigas",
+      "imgPublicacao": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/viagem.jpg",
+      "imgperfil": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/perfil1.jpg",
+      "likeada": false,
+      "likes": 0
+    },
+    {
+      "id": "2",
+      "userId": "2",
+      "nome": "Jonas Souza",
+      "descricao": "Menina sorrindo",
+      "imgperfil": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/perfil2.jpg",
+      "imgPublicacao": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/menina.jpg",
+      "likeada": false,
+      "likes": 0
+    }
+  ]
+  
