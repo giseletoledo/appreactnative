@@ -1,48 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import postsData from '../data/posts.json';
 import PostList from '../components/PostList';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const HomeScreen = () => {
+type HomeScreenProps = {
+  favorites: string[];
+  toggleFavorite: (postId: string) => void;
+}
+
+const HomeScreen: React.FC<HomeScreenProps> = ({favorites,toggleFavorite}) => {
   const [posts, setPosts] = useState(postsData);
-  const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
-    const loadFavorites = async () => {
+    const loadPosts = async () => {
       try {
-        const storedFavorites = await AsyncStorage.getItem('favorites');
-        if (storedFavorites) {
-          setFavorites(JSON.parse(storedFavorites));
+        const storedPosts = await AsyncStorage.getItem('posts');
+        
+        if (storedPosts) {
+          // Combina os posts carregados com os posts do postsData
+          const allPosts = [...postsData, ...JSON.parse(storedPosts)];
+          setPosts(allPosts);
+        } else {
+          // Se não houver posts no AsyncStorage, apenas use postsData
+          setPosts(postsData);
         }
       } catch (error) {
-        console.error('Erro ao carregar favoritos:', error);
+        console.error('Erro ao carregar posts:', error);
       }
     };
 
-    loadFavorites();
-  }, []);
-
-  const toggleFavorite = async (postId: string) => {
-    const newFavorites = [...favorites];
-    const index = newFavorites.indexOf(postId);
-
-    if (index !== -1) {
-      // Remove from favorites
-      newFavorites.splice(index, 1);
-    } else {
-      // Add to favorites
-      newFavorites.push(postId);
-    }
-
-    setFavorites(newFavorites);
-
-    try {
-      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
-    } catch (error) {
-      console.error('Erro ao salvar favoritos:', error);
-    }
-  };
+    loadPosts();
+  }, []); // Dependência vazia para carregar uma vez na montagem
 
   return (
     <View style={styles.container}>

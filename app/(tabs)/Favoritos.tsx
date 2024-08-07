@@ -5,34 +5,21 @@ import postsData from '../data/posts.json'; // Importa o JSON com todos os posts
 import { Post } from '../models/Post';
 import PostList from '../components/PostList';
 
-const FavoritesScreen: React.FC = () => {
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [favoritePosts, setFavoritePosts] = useState<Post[]>([]);
+type FavoriteScreenProps = {
+  favorites: string[];
+}
 
-  useEffect(() => {
-    const loadFavorites = async () => {
-      try {
-        const favoriteIdsString = await AsyncStorage.getItem('favorites');
-        if (favoriteIdsString) {
-          const favoriteIds: string[] = JSON.parse(favoriteIdsString);
-          const favoritePosts = postsData.filter(post => favoriteIds.includes(post.id));
-          setFavoritePosts(favoritePosts);
-          setFavoriteIds(favoriteIds);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar favoritos:', error);
-      }
-    };
+const FavoritesScreen: React.FC<FavoriteScreenProps> = ({ favorites }) => {
 
-    loadFavorites();
-  }, [favoritePosts]); // Atualiza quando favoriteIds muda
+  const favoritePosts = postsData.filter( post => favorites.includes(post.id));
 
   return (
     <View style={styles.container}>
       <PostList
         posts={favoritePosts}
-        favorites={favoriteIds}
-        onToggleFavorite={() => {}} // Não precisa da função aqui
+        favorites={favorites}
+        // Handle toggling favorites and update favoriteIds accordingly
+        onToggleFavorite={() => {}}
       />
     </View>
   );
@@ -47,4 +34,3 @@ const styles = StyleSheet.create({
 });
 
 export default FavoritesScreen;
-

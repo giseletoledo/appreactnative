@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreen from './index';
 import ProfileScreen from './Perfil';
 import CreatePostScreen from './novoPost';
-import FavoritesScreen from './Favoritos'; // Importar a nova tela
-
+import FavoritesScreen from './Favoritos';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,74 +27,94 @@ const FavoritesIcon: React.FC<{ color: string; size: number }> = ({ color, size 
 );
 
 export default function TabLayout() {
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const storedFavorites = await AsyncStorage.getItem('favorites');
+        if (storedFavorites) {
+          setFavorites(JSON.parse(storedFavorites));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar favoritos:', error);
+      }
+    };
+    loadFavorites();
+  }, []);
+
+  const toggleFavorite = async (postId: string) => {
+    const newFavorites = [...favorites];
+    const index = newFavorites.indexOf(postId);
+
+    if (index !== -1) {
+      newFavorites.splice(index, 1);
+    } else {
+      newFavorites.push(postId);
+    }
+
+    setFavorites(newFavorites);
+
+    try {
+      await AsyncStorage.setItem('favorites', JSON.stringify(newFavorites));
+    } catch (error) {
+      console.error('Erro ao salvar favoritos:', error);
+    }
+  };
+
   return (
-      <Tab.Navigator
+    <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#FF0000', // Cor ativa dos ícones
-        tabBarInactiveTintColor: '#FFEBD4', // Cor inativa dos ícones
+        tabBarActiveTintColor: '#FF0000',
+        tabBarInactiveTintColor: '#FFEBD4',
         tabBarStyle: {
-          backgroundColor: '#FF7777', // Cor de fundo da barra de navegação
-          borderTopWidth: 0, // Remover linha superior
+          backgroundColor: '#FF7777',
+          borderTopWidth: 0,
         },
       }}
-
+    >
+      <Tab.Screen
+        name="Home"
+        options={{
+          headerStyle: { backgroundColor: '#FF0000' },
+          headerTintColor: 'white',
+          headerTitleStyle: { fontWeight: 'bold' },
+          tabBarIcon: HomeIcon,
+        }}
       >
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            headerStyle: {
-              backgroundColor: '#FF0000'
-            },
-            headerTintColor: 'white',
-            headerTitleStyle:{
-              fontWeight: 'bold',
-            },
-            tabBarIcon: HomeIcon,
-          }}
-        />
-        <Tab.Screen
-          name="Perfil" // nome da rota e arquivo no tabs
-          component={ProfileScreen} //nome no import
-          options={{
-            headerStyle: {
-              backgroundColor: '#FF0000'
-            },
-            headerTintColor: 'white',
-            headerTitleStyle:{
-              fontWeight: 'bold',
-            },
-            tabBarIcon: ProfileIcon,
-          }}
-        />
-        <Tab.Screen
-          name="novoPost" 
-          component={CreatePostScreen}
-          options={{
-            headerStyle: {
-              backgroundColor: '#FF0000'
-            },
-            headerTintColor: 'white',
-            headerTitleStyle:{
-              fontWeight: 'bold',
-            },
-            tabBarIcon: CreatePostIcon,
-          }}
-        />
-        <Tab.Screen
-          name="Favoritos"
-          component={FavoritesScreen}
-          options={{
-            headerStyle: {
-              backgroundColor: '#FF0000'
-            },
-            headerTintColor: 'white',
-            headerTitleStyle:{
-              fontWeight: 'bold',
-            },
-            tabBarIcon: FavoritesIcon,
-          }}
-        />
-      </Tab.Navigator>
+        {() => <HomeScreen favorites={favorites} toggleFavorite={toggleFavorite} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Perfil"
+        component={ProfileScreen}
+        options={{
+          headerStyle: { backgroundColor: '#FF0000' },
+          headerTintColor: 'white',
+          headerTitleStyle: { fontWeight: 'bold' },
+          tabBarIcon: ProfileIcon,
+        }}
+      />
+      <Tab.Screen
+        name="novoPost"
+        component={CreatePostScreen}
+        options={{
+          headerStyle: { backgroundColor: '#FF0000' },
+          headerTintColor: 'white',
+          headerTitleStyle: { fontWeight: 'bold' },
+          tabBarIcon: CreatePostIcon,
+        }}
+      />
+      <Tab.Screen
+        name="Favoritos"
+        options={{
+          headerStyle: { backgroundColor: '#FF0000' },
+          headerTintColor: 'white',
+          headerTitleStyle: { fontWeight: 'bold' },
+          tabBarIcon: FavoritesIcon,
+        }}
+      >
+        {() => <FavoritesScreen favorites={favorites} />}
+      </Tab.Screen>
+    </Tab.Navigator>
   );
 }
