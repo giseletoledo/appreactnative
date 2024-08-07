@@ -18,6 +18,16 @@
       "imgPublicacao": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/menina.jpg",
       "likeada": false,
       "likes": 0
+    },
+    {
+      "id": "3",
+      "userId": "3",
+      "nome": "Aurora Silva",
+      "descricao": "Vaso de flores",
+      "imgperfil": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/perfil3.jpg",
+      "imgPublicacao": "https://raw.githubusercontent.com/giseletoledo/appreactnative/main/imagens/flores.jpg",
+      "likeada": false,
+      "likes": 0
     }
   ]
   
